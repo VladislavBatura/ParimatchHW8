@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hw4.Exercise0", "src\Hw4.Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hw4.Exercise0.Tests", "tests\Hw4.Exercise0.Tests\Hw4.Exercise0.Tests.csproj", "{191DFD53-7C28-43AE-964E-FEC653B51B30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LectureExample", "src\LectureExample\LectureExample.csproj", "{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,7 @@ Global
 		{04E5C4C1-1037-492F-BFBD-8069809A2215} = {231810A6-D537-4059-8904-3941598438DA}
 		{0C30538E-725B-4DC4-9976-9852FE508072} = {738912C3-4781-4FDB-BBE9-7805A673E6DC}
 		{191DFD53-7C28-43AE-964E-FEC653B51B30} = {231810A6-D537-4059-8904-3941598438DA}
+		{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9} = {738912C3-4781-4FDB-BBE9-7805A673E6DC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{42AF9BD1-661C-4BD7-AE6E-7434D9C3932D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -72,5 +75,9 @@ Global
 		{191DFD53-7C28-43AE-964E-FEC653B51B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{191DFD53-7C28-43AE-964E-FEC653B51B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{191DFD53-7C28-43AE-964E-FEC653B51B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6A6DE19-2A57-45C7-A491-2DE9BE8694F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
