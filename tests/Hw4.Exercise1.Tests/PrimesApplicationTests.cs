@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -23,6 +23,9 @@ public class PrimesApplicationTests
     {
         // arrange
         var filesProvider = GetFilesProvider();
+        filesProvider
+            .Exists(Arg.Is<string>(s => s == SettingsFile))
+            .Returns(true);
         var app = new PrimesApplication(filesProvider);
 
         // act
@@ -41,7 +44,7 @@ public class PrimesApplicationTests
     public void App_Settings_File_Return_Error_FileNotFound()
     {
         // arrange
-        Stream contentStream = null;
+        Stream contentStream = new MemoryStream();
         var filesProvider = GetFilesProvider();
         filesProvider
             .Read(Arg.Is<string>(s => s == SettingsFile))
@@ -49,7 +52,11 @@ public class PrimesApplicationTests
 
         filesProvider.Write(
             Arg.Is<string>(s => s == ResultsFile),
-            Arg.Do<Stream>(x => contentStream = x));
+            Arg.Do<Stream>(x =>
+            {
+                x.CopyTo(contentStream);
+                contentStream.Seek(0, SeekOrigin.Begin);
+            }));
 
         var app = new PrimesApplication(filesProvider);
 
@@ -61,7 +68,7 @@ public class PrimesApplicationTests
 
         // verify
         filesProvider
-            .Received(1)
+            .Received(0)
             .Read(Arg.Is<string>(s => s == SettingsFile));
 
         // act
@@ -82,12 +89,18 @@ public class PrimesApplicationTests
     public void App_Settings_File_Return_Error_FileCorrupted(string settingsContent)
     {
         // arrange
-        Stream contentStream = null;
+        var contentStream = new MemoryStream();
         var filesProvider = GetFilesProvider(settingsContent);
-
+        filesProvider
+            .Exists(Arg.Is<string>(s => s == SettingsFile))
+            .Returns(true);
         filesProvider.Write(
             Arg.Is<string>(s => s == ResultsFile),
-            Arg.Do<Stream>(x => contentStream = x));
+            Arg.Do<Stream>(x =>
+            {
+                x.CopyTo(contentStream);
+                contentStream.Seek(0, SeekOrigin.Begin);
+            }));
 
         var app = new PrimesApplication(filesProvider);
 
@@ -113,12 +126,18 @@ public class PrimesApplicationTests
     public void App_Writes_Results_File()
     {
         // arrange
-        Stream contentStream = null;
+        var contentStream = new MemoryStream();
         var filesProvider = GetFilesProvider();
-
+        filesProvider
+            .Exists(Arg.Is<string>(s => s == SettingsFile))
+            .Returns(true);
         filesProvider.Write(
             Arg.Is<string>(s => s == ResultsFile),
-            Arg.Do<Stream>(x => contentStream = x));
+            Arg.Do<Stream>(x =>
+            {
+                x.CopyTo(contentStream);
+                contentStream.Seek(0, SeekOrigin.Begin);
+            }));
         var app = new PrimesApplication(filesProvider);
 
         // act
@@ -141,12 +160,18 @@ public class PrimesApplicationTests
     public void App_Writes_Results_File_Correct_Format(int from, int to, string range)
     {
         // arrange
-        Stream contentStream = null;
+        var contentStream = new MemoryStream();
         var filesProvider = GetFilesProvider(from, to);
-
+        filesProvider
+            .Exists(Arg.Is<string>(s => s == SettingsFile))
+            .Returns(true);
         filesProvider.Write(
             Arg.Is<string>(s => s == ResultsFile),
-            Arg.Do<Stream>(x => contentStream = x));
+            Arg.Do<Stream>(x =>
+            {
+                x.CopyTo(contentStream);
+                contentStream.Seek(0, SeekOrigin.Begin);
+            }));
         var app = new PrimesApplication(filesProvider);
 
         // act
@@ -189,12 +214,18 @@ public class PrimesApplicationTests
     public void App_Writes_Results_File_Correct_Primes(int from, int to, string primes)
     {
         // arrange
-        Stream contentStream = null;
+        var contentStream = new MemoryStream();
         var filesProvider = GetFilesProvider(from, to);
-
+        filesProvider
+            .Exists(Arg.Is<string>(s => s == SettingsFile))
+            .Returns(true);
         filesProvider.Write(
             Arg.Is<string>(s => s == ResultsFile),
-            Arg.Do<Stream>(x => contentStream = x));
+            Arg.Do<Stream>(x =>
+            {
+                x.CopyTo(contentStream);
+                contentStream.Seek(0, SeekOrigin.Begin);
+            }));
         var app = new PrimesApplication(filesProvider);
 
         // act
