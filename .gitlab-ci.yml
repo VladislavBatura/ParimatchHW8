@@ -29,35 +29,7 @@ build:
 Exercise0:
   stage: test
   script:
-    - 'dotnet test ./tests/Hw4.Exercise0.Tests --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=../../artifacts/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
-  tags:
-    - docker-shared
-  artifacts:
-    when: always
-    paths:
-      - ./**/*test-result.xml
-    reports:
-      junit:
-        - ./**/*test-result.xml
-
-Exercise1:
-  stage: test
-  script:
-    - 'dotnet test ./tests/Hw4.Exercise1.Tests --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=../../artifacts/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
-  tags:
-    - docker-shared
-  artifacts:
-    when: always
-    paths:
-      - ./**/*test-result.xml
-    reports:
-      junit:
-        - ./**/*test-result.xml
-
-Exercise2:
-  stage: test
-  script:
-    - 'dotnet test ./tests/Hw4.Exercise2.Tests --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=../../artifacts/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
+    - 'dotnet test ./tests/Hw5.Exercise0.Tests --no-restore --test-adapter-path:. --logger:"junit;LogFilePath=../../artifacts/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"'
   tags:
     - docker-shared
   artifacts:
