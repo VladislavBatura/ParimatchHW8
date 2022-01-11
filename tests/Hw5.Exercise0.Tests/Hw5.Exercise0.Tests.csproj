@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Hw4.Exercise0\Hw5.Exercise0.csproj" />
+      <ProjectReference Include="..\..\src\Hw5.Exercise0\Hw5.Exercise0.csproj" />
     </ItemGroup>
 
 </Project>
