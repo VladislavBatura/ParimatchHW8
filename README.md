@@ -34,6 +34,7 @@
 
 ### Источник данных
 `https://bank.gov.ua/ua/open-data/api-dev`
+
 `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json`
 
 ### Задание:
