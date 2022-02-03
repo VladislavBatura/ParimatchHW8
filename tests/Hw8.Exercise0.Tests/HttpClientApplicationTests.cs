@@ -114,6 +114,7 @@ public class HttpClientApplicationTests
     [InlineData("usd", "uah")]
     [InlineData("usdt", "uah", "10")]
     [InlineData("xxx", "uah", "10")]
+    [InlineData("dfe", "wf8", "10")]
     [InlineData("usd", "yyy", "10")]
     [InlineData("usd", "uaht", "10")]
     [InlineData("usd", "uah", "ten")]

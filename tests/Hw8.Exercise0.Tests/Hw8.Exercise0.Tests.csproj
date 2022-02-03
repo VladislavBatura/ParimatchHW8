@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Hw5.Exercise0\Hw5.Exercise0.csproj" />
+      <ProjectReference Include="..\..\src\Hw8.Exercise0\Hw8.Exercise0.csproj" />
     </ItemGroup>
 
 </Project>
