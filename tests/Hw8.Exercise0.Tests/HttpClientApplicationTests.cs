@@ -56,7 +56,7 @@ public class HttpClientApplicationTests
         var httpClientMock = new MockHttpMessageHandler();
         var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
         httpClientMock
-            .When(HttpMethod.Get, ApiUrl)
+            .Expect(HttpMethod.Get, ApiUrl)
             .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
 
         // act
@@ -96,7 +96,7 @@ public class HttpClientApplicationTests
 
         var httpClientMock = new MockHttpMessageHandler();
         httpClientMock
-            .When(HttpMethod.Get, ApiUrl)
+            .Expect(HttpMethod.Get, ApiUrl)
             .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
 
         var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
