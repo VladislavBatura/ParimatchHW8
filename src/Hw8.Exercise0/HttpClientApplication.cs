@@ -4,7 +4,7 @@ namespace Hw8.Exercise0;
 
 public class HttpClientApplication
 {
-    public HttpClientApplication()
+    public HttpClientApplication(/* TODO: Inject your dependencies here */)
     {
     }
 
