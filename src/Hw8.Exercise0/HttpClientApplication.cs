@@ -1,17 +1,11 @@
 ﻿using Common;
-using RichardSzalay.MockHttp;
 
-namespace Hw5.Exercise0;
+namespace Hw8.Exercise0;
 
 public class HttpClientApplication
 {
-    private readonly IFileSystemProvider _fileSystemProvider;
-    private readonly HttpClient _httpClient;
-
-    public HttpClientApplication(MockHttpMessageHandler httpMessageHandler, IFileSystemProvider fileSystemProvider)
+    public HttpClientApplication()
     {
-        _fileSystemProvider = fileSystemProvider;
-        _httpClient = httpMessageHandler.ToHttpClient();
     }
 
     /// <summary>

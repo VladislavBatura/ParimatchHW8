@@ -4,5 +4,5 @@ public interface IFileSystemProvider
 {
     bool Exists(string filename);
     Stream Read(string filename);
-    void Write(string filename, Stream stream);
+    Task WriteAsync(string filename, Stream stream);
 }

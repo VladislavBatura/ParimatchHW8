@@ -1,5 +1,5 @@
 ﻿using Common;
-using Hw5.Exercise0;
+using Hw8.Exercise0;
 using Microsoft.Extensions.DependencyInjection;
 using RichardSzalay.MockHttp;
 
@@ -12,7 +12,8 @@ var sp = new ServiceCollection()
         return httpClientMock;
     })
     .AddTransient<IFileSystemProvider, FileSystemProvider>()
-    .AddTransient<HttpClientApplication>()
+    .AddHttpClientApplication()
     .BuildServiceProvider();
 
 return (int)sp.GetRequiredService<HttpClientApplication>().Run(args);
+

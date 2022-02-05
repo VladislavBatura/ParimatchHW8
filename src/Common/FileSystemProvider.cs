@@ -12,7 +12,7 @@ public class FileSystemProvider : IFileSystemProvider
         throw new NotImplementedException("Should be implemented by executor");
     }
 
-    public void Write(string filename, Stream stream)
+    public Task WriteAsync(string filename, Stream stream)
     {
         throw new NotImplementedException("Should be implemented by executor");
     }

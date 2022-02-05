@@ -4,11 +4,13 @@ using System.Text;
 using System.Text.Json;
 using Common;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Hw5.Exercise0.Tests;
+namespace Hw8.Exercise0.Tests;
 
 public class HttpClientApplicationTests
 {
@@ -46,68 +48,94 @@ public class HttpClientApplicationTests
     };
 
     [Fact]
+    public void AddHttpClientApplication_WhenResolve_ExpectedNoIFsAndHttpClientRegistration()
+    {
+        using var sp = CreateServiceProvider(_ => { });
+        Action fsResolving = () => sp.GetRequiredService<IFileSystemProvider>();
+        fsResolving.Should().Throw<InvalidOperationException>();
+        Action httpClientResolving = () => sp.GetRequiredService<HttpClient>();
+        httpClientResolving.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
     public void Run_WhenStaleCacheDataAndNbuAvailable_ExpectedNbuApiCallAndReturnsSuccess()
     {
         // arrange
-        var fileSystemProvider = Substitute.For<IFileSystemProvider>();
-        fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(true);
-        fileSystemProvider.Read(Arg.Is(CacheFile)).Returns(ToUtf8ByteStream(_staleUsd, _staleEur));
-
-        var httpClientMock = new MockHttpMessageHandler();
-        var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
-        httpClientMock
-            .Expect(HttpMethod.Get, ApiUrl)
-            .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
+        using var sp = CreateServiceProvider(x => x
+            .AddSingleton(_ =>
+            {
+                var fileSystemProvider = Substitute.For<IFileSystemProvider>();
+                fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(true);
+                fileSystemProvider.Read(Arg.Is(CacheFile)).Returns(ToUtf8ByteStream(_staleUsd, _staleEur));
+                return fileSystemProvider;
+            })
+            .AddSingleton(_ =>
+            {
+                var httpClientMock = new MockHttpMessageHandler();
+                httpClientMock
+                    .Expect(HttpMethod.Get, ApiUrl)
+                    .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
+                return httpClientMock;
+            }));
 
         // act
-        var exitCode = app.Run("usd", "uah", "10");
+        var exitCode = sp.GetRequiredService<HttpClientApplication>().Run("usd", "uah", "10");
 
         // assert
         exitCode.Should().Be(ReturnCode.Success);
-        fileSystemProvider.Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
-        httpClientMock.VerifyNoOutstandingExpectation();
+        sp.GetRequiredService<IFileSystemProvider>().Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
+        sp.GetRequiredService<MockHttpMessageHandler>().VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public void Run_WhenCacheDataAndNbuAvailable_ExpectedReturnsSuccess()
     {
         // arrange
-        var fileSystemProvider = Substitute.For<IFileSystemProvider>();
-        fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(true);
-        fileSystemProvider.Read(Arg.Is(CacheFile)).Returns(ToUtf8ByteStream(_usd, _eur));
-
-        var httpClientMock = new MockHttpMessageHandler();
-        var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
+        using var sp = CreateServiceProvider(x => x
+            .AddSingleton(_ =>
+            {
+                var fileSystemProvider = Substitute.For<IFileSystemProvider>();
+                fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(true);
+                fileSystemProvider.Read(Arg.Is(CacheFile)).Returns(ToUtf8ByteStream(_usd, _eur));
+                return fileSystemProvider;
+            })
+            .AddSingleton<MockHttpMessageHandler>());
 
         // act
-        var exitCode = app.Run("usd", "uah", "10");
+        var exitCode = sp.GetRequiredService<HttpClientApplication>().Run("usd", "uah", "10");
 
         // assert
         exitCode.Should().Be(ReturnCode.Success);
-        httpClientMock.VerifyNoOutstandingExpectation();
+        sp.GetRequiredService<MockHttpMessageHandler>().VerifyNoOutstandingExpectation();
     }
 
     [Fact]
     public void Run_WhenNoCacheDataAndNbuAvailable_ExpectedWriteToCacheAndReturnsSuccess()
     {
         // arrange
-        var fileSystemProvider = Substitute.For<IFileSystemProvider>();
-        fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(false);
-
-        var httpClientMock = new MockHttpMessageHandler();
-        httpClientMock
-            .Expect(HttpMethod.Get, ApiUrl)
-            .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
-
-        var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
+        using var sp = CreateServiceProvider(x => x
+            .AddSingleton(_ =>
+            {
+                var fileSystemProvider = Substitute.For<IFileSystemProvider>();
+                fileSystemProvider.Exists(Arg.Is(CacheFile)).Returns(false);
+                return fileSystemProvider;
+            })
+            .AddSingleton(_ =>
+            {
+                var httpClientMock = new MockHttpMessageHandler();
+                httpClientMock
+                    .Expect(HttpMethod.Get, ApiUrl)
+                    .Respond(HttpStatusCode.OK, "application/json", ToUtf8ByteStream(_usd, _eur));
+                return httpClientMock;
+            }));
 
         // act
-        var exitCode = app.Run("usd", "uah", "10");
+        var exitCode = sp.GetRequiredService<HttpClientApplication>().Run("usd", "uah", "10");
 
         // assert
         exitCode.Should().Be(ReturnCode.Success);
-        fileSystemProvider.Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
-        httpClientMock.VerifyNoOutstandingExpectation();
+        sp.GetRequiredService<IFileSystemProvider>().Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
+        sp.GetRequiredService<MockHttpMessageHandler>().VerifyNoOutstandingExpectation();
     }
 
     [Theory]
@@ -122,12 +150,12 @@ public class HttpClientApplicationTests
     public void Run_WhenNotValidArgs_ReturnsInvalidArgsExitCode(params string[] args)
     {
         // arrange
-        var fileSystemProvider = GetFilesProvider(new { });
-        var httpClientMock = new MockHttpMessageHandler();
-        var app = new HttpClientApplication(httpClientMock, fileSystemProvider);
+        using var sp = CreateServiceProvider(x => x
+            .AddSingleton(_ => GetFilesProvider(new { }))
+            .AddSingleton<MockHttpMessageHandler>());
 
         // act
-        var exitCode = app.Run(args);
+        var exitCode = sp.GetRequiredService<HttpClientApplication>().Run(args);
 
         // assert
         exitCode.Should().Be(ReturnCode.InvalidArgs);
@@ -136,6 +164,14 @@ public class HttpClientApplicationTests
     private static Stream ToUtf8ByteStream<T>(params T[] content)
     {
         return new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(content)));
+    }
+
+    private static ServiceProvider CreateServiceProvider(Action<IServiceCollection> configure)
+    {
+        var sc = new ServiceCollection().AddHttpClientApplication();
+        configure(sc);
+
+        return sc.BuildServiceProvider();
     }
 
     private static IFileSystemProvider GetFilesProvider<T>(params T[] content)
