@@ -1,11 +1,23 @@
 ﻿using Common;
+using Hw8.Exercise0.Core;
+using Hw8.Exercise0.Models;
+using RichardSzalay.MockHttp;
 
 namespace Hw8.Exercise0;
 
 public class HttpClientApplication
 {
-    public HttpClientApplication(/* TODO: Inject your dependencies here */)
+    private readonly IFileSystemProvider _fileSystemProvider;
+    private readonly HttpClient _httpClient;
+    private readonly JsonHandler _jsonHandler;
+    private const string Cache = "cache.json";
+    private const string RequestURL = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json";
+
+    public HttpClientApplication(JsonHandler jsonHandler, MockHttpMessageHandler httpMessageHandler, IFileSystemProvider fileSystemProvider)
     {
+        _jsonHandler = jsonHandler;
+        _fileSystemProvider = fileSystemProvider;
+        _httpClient = httpMessageHandler.ToHttpClient();
     }
 
     /// <summary>
@@ -19,6 +31,64 @@ public class HttpClientApplication
     /// </returns>
     public ReturnCode Run(params string[] args)
     {
-        throw new NotImplementedException("Should be implemented by executor");
+        if (!ArgumentsHandler.IsValidArgs(args))
+        {
+            return ReturnCode.InvalidArgs;
+        }
+
+        if (!_jsonHandler.IsProviderInjected())
+        {
+            _jsonHandler.InjectProvider(_fileSystemProvider);
+        }
+
+        if (!_fileSystemProvider.Exists(Cache))
+        {
+            //Without this "Success-return"
+            //test "Run_WhenNoCacheDataAndNbuAvailable_ExpectedWriteToCacheAndReturnsSuccess" will fail
+            return !RequestSerializer.SendRequestSerializeResult(_httpClient, RequestURL, Cache, _jsonHandler)
+                ? ReturnCode.Error
+                : ReturnCode.Success;
+        }
+
+        var enumCurrency = _jsonHandler.Deserialize(Cache);
+
+        //i don't want to check, if enumCurrecny is not type of listCurrency,
+        //because it will always be IEnumerable, and will cast
+#pragma warning disable IDE0019 // Use pattern matching
+        var listCurrency = enumCurrency as List<Currency>;
+#pragma warning restore IDE0019 // Use pattern matching
+
+        if (listCurrency is null || !listCurrency.Any())
+        {
+            return ReturnCode.Error;
+        }
+
+        if (!ValidateDate.IsValidDate(listCurrency!.First().ExchangeDate))
+        {
+            if (!RequestSerializer.SendRequestSerializeResult(_httpClient, RequestURL, Cache, _jsonHandler))
+            {
+                return ReturnCode.Error;
+            }
+
+            enumCurrency = _jsonHandler.Deserialize(Cache);
+            listCurrency = enumCurrency as List<Currency>;
+            if (listCurrency is null || !listCurrency.Any())
+            {
+                return ReturnCode.Error;
+            }
+        }
+
+        var data = Transaction.ParseArgs(args);
+
+        if (!Transaction.IsValidArgs(data, listCurrency))
+        {
+            return ReturnCode.InvalidArgs;
+        }
+
+        var result = Transaction.ProcessTransaction(listCurrency, data);
+
+        Console.Write($"{result.Currency} {result.Date} {result.Amount}");
+
+        return ReturnCode.Success;
     }
 }

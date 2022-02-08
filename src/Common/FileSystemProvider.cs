@@ -9,7 +9,9 @@ public class FileSystemProvider : IFileSystemProvider
 
     public Stream Read(string filename)
     {
-        return new FileStream(filename, FileMode.Open);
+        var stream = new FileStream(filename, FileMode.Open);
+        _ = stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 
     public Task WriteAsync(string filename, Stream stream)
