@@ -83,7 +83,7 @@ public class HttpClientApplicationTests
 
         // assert
         exitCode.Should().Be(ReturnCode.Success);
-        sp.GetRequiredService<IFileSystemProvider>().Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
+        sp.GetRequiredService<IFileSystemProvider>().Received().WriteAsync(Arg.Is(CacheFile), Arg.Any<Stream>());
         sp.GetRequiredService<MockHttpMessageHandler>().VerifyNoOutstandingExpectation();
     }
 
@@ -134,7 +134,7 @@ public class HttpClientApplicationTests
 
         // assert
         exitCode.Should().Be(ReturnCode.Success);
-        sp.GetRequiredService<IFileSystemProvider>().Received().Write(Arg.Is(CacheFile), Arg.Any<Stream>());
+        sp.GetRequiredService<IFileSystemProvider>().Received().WriteAsync(Arg.Is(CacheFile), Arg.Any<Stream>());
         sp.GetRequiredService<MockHttpMessageHandler>().VerifyNoOutstandingExpectation();
     }
 
