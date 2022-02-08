@@ -4,16 +4,20 @@ public class FileSystemProvider : IFileSystemProvider
 {
     public bool Exists(string filename)
     {
-        throw new NotImplementedException("Should be implemented by executor");
+        return File.Exists(filename);
     }
 
     public Stream Read(string filename)
     {
-        throw new NotImplementedException("Should be implemented by executor");
+        return new FileStream(filename, FileMode.Open);
     }
 
     public Task WriteAsync(string filename, Stream stream)
     {
-        throw new NotImplementedException("Should be implemented by executor");
+        _ = stream.Seek(0, SeekOrigin.Begin);
+
+        using var writeStream = File.OpenWrite(filename);
+
+        return stream.CopyToAsync(writeStream);
     }
 }

@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         return @this
             // TODO: Add your other dependencies here
+            .AddSingleton<IFileSystemProvider, FileSystemProvider>()
             .AddSingleton(sp => sp.GetRequiredService<MockHttpMessageHandler>().ToHttpClient())
             .AddTransient<HttpClientApplication>();
     }
