@@ -78,16 +78,16 @@ public class HttpClientApplication
             }
         }
 
-        var data = Transaction.ParseArgs(args);
+        var transactionData = TransactionArgumentsHandler.ParseArgs(args);
 
-        if (!Transaction.IsValidArgs(data, listCurrency))
+        if (!TransactionArgumentsHandler.IsValidArgs(transactionData, listCurrency))
         {
             return ReturnCode.InvalidArgs;
         }
 
-        var result = Transaction.ProcessTransaction(listCurrency, data);
+        var resultTransaction = Transaction.ProcessTransaction(listCurrency, transactionData);
 
-        Console.Write($"{result.Currency} {result.Date} {result.Amount}");
+        Console.Write($"{resultTransaction.Currency} {resultTransaction.Date} {resultTransaction.Amount}");
 
         return ReturnCode.Success;
     }
